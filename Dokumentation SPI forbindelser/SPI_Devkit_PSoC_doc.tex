@@ -70,6 +70,27 @@ Der bruges en 8bit kommando til at sende data til PSoC2 og PSoC3, det er denne k
  
 \section*{Test}
 
+\subsection{Test af SPI forbindelse mellem PSoC master og PSoC slave}
+
+Testen for forbindelsen mellem PSoC master og PSoC slave gennemføres vha. en terminal og logic analizer på Analog Discovery. De to PSoc enheder bliver sat 
+til hver ders PC, og der laves en UART forbindelse så det kan ses på et terminal-vindue hvilke data der bliver sendt og modtaget. Derefter forbindes de to PSoC
+enheder til hinanden med SPI, og der tilføjet desuden en fælles GND forbindelser. På billedet ses en også en VDD forbindelse fra PSoC master, denne er dog kun 
+nødvendig hvis slaven ikke får VDD fra PC.  
+
+\includegraphics{Screenshots/SPI_testopstilling}
+\caption{PSoC forbundet til pc via UART og med anden PSoC enhed via SPI}
+
+Desuden sættes Analog Discovery på SPI forbindelsen og der måles på CLCK, SS (slave select) og MOSI, for at sikre at SPI signalet ser fornuftigt ud. Altså at SS 
+går lav ved dataoverførelse, og den korrekte bitsekvens sendes på MOSI. Grunden til der ses efter om SS går lav, er fordi der ved SPI kan være flere slaver 
+tilsluttet. SPI fungere på den måde at den trække sinalet lavt på den slave som skal modtage signalet.
+CLCK er ikke særligt interessant, men det kan evt. tjekkes om frekvensen stemmer overens med det som angives i koden for PSoC. 
+
+\includegraphics{Screenshots/Logic_analyzer}
+\caption{Test med Analog Discovery på SPI forbindelsen}
+
+Der sendes data fra master til slave, og der kigges på terminalen og logic analizer for at se hvilke data slave modtager. I denne test sendes kommandoen 0x5 til 
+slaven at antal gange. 
+
 \subsection*(Test af SPI forbindelse imellem Devit8000 og PSoC1)
 Testen for SPI forbindelsen imellem Devkit8000 og PSoC1 foretages med analog discovery, hvor der måles på SS, CLCK, og henholdsvis MISO og MOSI.
 
@@ -87,6 +108,20 @@ status på knap 2.1 på PSoC1 blive aflæst. Således kan det testes at der sendes d
 
 
 \section*{Resultater}
+
+\subsection*(Resultater af test for PSoC-PSoC SPI)
+
+Ved testen ses at der udskrives 05 på terminalvindue for PSoC-slave. Dette passer fint med den kommando der sendes fra master. SPI forbindelsen fungere altså
+fint.
+ 
+\includegraphics{Screenshots/Terminal_spi_slave}
+\caption{Terminal udskrift fra PSoC slave enheden}   
+
+Der kigges også på logic analizer, og det ses at SS går lav ved dataoverførelse.   
+
+\includegraphics{Screenshots/Logic_analyzer}
+\caption{logic analizer målt på SPI forbindelsen} 
+  
 \subsection*(Resultater af test for Devkit-PSoC SPI)
 Ved første test scenarie ses hvordan der sendes værdien 20 fra devkit til PSoC1 med linux kommandoen echo. På logic analyzer ses at der sendes to gange 8bit.
 først en adresse kode, som er 65, og derefter værdien 20. Det ses også at SS går lav ved dataoverførelse og at clock er stabil. Testen er derfor tilfredsstillende.

@@ -1,6 +1,6 @@
-\chapter*{Dokumentation for SPI forbindelse imellem Devit8000 og PSoC}
+\chapter{Dokumentation for SPI forbindelse imellem Devit8000 og PSoC}
 
-\section*{Indleding}
+\section{Indleding}
 I wineprep projektet skal der bruges en linux platform, som i dette projekt består af et devkit8000 hvorpå der er installeret distributionen Ångstöm. 
 Denne skal tage imod input fra brugeren af systemet via en grafisk brugergrænseflade og omskrive disse til kommandoer, som sendes til PSoC. Desuden
 vil PSoC sende status beskeder tilbage til Devkittet. 
@@ -16,7 +16,7 @@ blevet arbejdet en del med de to serielle dataforbindelses standarter I2C og SPI
 Det er fra gruppens side, og med opfordring fra vejleder blevet besluttet at SPI vil blive benyttet i dette projekt til forbindelsen imellem Devkit og 
 PSoC. Grunden til dette valg er mest af alt bekvæmmelighed, da der allerede er arbejdet med SPI drivere til Linux og PSoC i tidligere laboratorie øvelser.   
 
-\section*{Design og implementering}
+\section{Design og implementering}
 SPI er en synkron dataopførselsmetode, hvor to enheder indgår i et master-slave forhold, og hvor data sendes og modtages mellem de to enheder på
 samme tid med klokken som "taktstok". For mere information omkring SPI protokollen henvises til bilag(*referance til SPI protokollen).
 Devkit8000 vil i dette tilfælde udfører rollen som master i forbindelsen til PSoC1, hvilket også betyder at det er denne som står for at starte 
@@ -68,9 +68,30 @@ Der bruges en 8bit kommando til at sende data til PSoC2 og PSoC3, det er denne k
 \caption{Eksempel på switch cases for PSoC2 og PSoC3}
      
  
-\section*{Test}
+\section{Test}
 
-\subsection*(Test af SPI forbindelse imellem Devit8000 og PSoC1)
+\subsection{Test af SPI forbindelse mellem PSoC master og PSoC slave}
+
+Testen for forbindelsen mellem PSoC master og PSoC slave gennemføres vha. en terminal og logic analizer på Analog Discovery. De to PSoc enheder bliver sat 
+til hver ders PC, og der laves en UART forbindelse så det kan ses på et terminal-vindue hvilke data der bliver sendt og modtaget. Derefter forbindes de to PSoC
+enheder til hinanden med SPI, og der tilføjet desuden en fælles GND forbindelser. På billedet ses en også en VDD forbindelse fra PSoC master, denne er dog kun 
+nødvendig hvis slaven ikke får VDD fra PC.  
+
+\includegraphics{Screenshots/SPI_testopstilling}
+\caption{PSoC forbundet til pc via UART og med anden PSoC enhed via SPI}
+
+Desuden sættes Analog Discovery på SPI forbindelsen og der måles på CLCK, SS (slave select) og MOSI, for at sikre at SPI signalet ser fornuftigt ud. Altså at SS 
+går lav ved dataoverførelse, og den korrekte bitsekvens sendes på MOSI. Grunden til der ses efter om SS går lav, er fordi der ved SPI kan være flere slaver 
+tilsluttet. SPI fungere på den måde at den trække sinalet lavt på den slave som skal modtage signalet.
+CLCK er ikke særligt interessant, men det kan evt. tjekkes om frekvensen stemmer overens med det som angives i koden for PSoC. 
+
+\includegraphics{Screenshots/Logic_analyzer}
+\caption{Test med Analog Discovery på SPI forbindelsen}
+
+Der sendes data fra master til slave, og der kigges på terminalen og logic analizer for at se hvilke data slave modtager. I denne test sendes kommandoen 0x5 til 
+slaven at antal gange. 
+
+\subsection(Test af SPI forbindelse imellem Devit8000 og PSoC1)
 Testen for SPI forbindelsen imellem Devkit8000 og PSoC1 foretages med analog discovery, hvor der måles på SS, CLCK, og henholdsvis MISO og MOSI.
 
 \includegraphics{Screenshots/Test_analog}
@@ -86,8 +107,22 @@ fra PSoC1. I test programmet på PSoC1 er der implementeret en switch, som gør at
 status på knap 2.1 på PSoC1 blive aflæst. Således kan det testes at der sendes den korrekte data fra MISO.     
 
 
-\section*{Resultater}
-\subsection*(Resultater af test for Devkit-PSoC SPI)
+\section{Resultater}
+
+\subsection(Resultater af test for PSoC-PSoC SPI)
+
+Ved testen ses at der udskrives 05 på terminalvindue for PSoC-slave. Dette passer fint med den kommando der sendes fra master. SPI forbindelsen fungere altså
+fint.
+ 
+\includegraphics{Screenshots/Terminal_spi_slave}
+\caption{Terminal udskrift fra PSoC slave enheden}   
+
+Der kigges også på logic analizer, og det ses at SS går lav ved dataoverførelse.   
+
+\includegraphics{Screenshots/Logic_analyzer}
+\caption{logic analizer målt på SPI forbindelsen} 
+  
+\subsection(Resultater af test for Devkit-PSoC SPI)
 Ved første test scenarie ses hvordan der sendes værdien 20 fra devkit til PSoC1 med linux kommandoen echo. På logic analyzer ses at der sendes to gange 8bit.
 først en adresse kode, som er 65, og derefter værdien 20. Det ses også at SS går lav ved dataoverførelse og at clock er stabil. Testen er derfor tilfredsstillende.
  
@@ -100,7 +135,7 @@ status for knappen på PSoC1, som er trykket nede og derfor viser 1.
 \includegraphics{Screenshots/Analog_cat_psoc_5}
 \caption{Data bliver læst fra PSoC1} 
 
-\section*{Diskussion}
+\section{Diskussion}
 Ud fra ovenstående ses det at SPI kan bruges til at kommunikere imellem devkit8000 og PSoC1, samt at kommunikere imellem PSoC enhederne. Som resultaterne af 
 testen viser er SPI en smart måde hvorpå der kan sendes og modtages data samtidigt. Det skal dog nævnes at der har været mange problemer med denne kommunikation,
 og der er brugt adskillige timer på at få det til at virke. Så sammenlignet med UART som fungerede problemfrit på 1 og 2 semester, så har SPI været meget mere

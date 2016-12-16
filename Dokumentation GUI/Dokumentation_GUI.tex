@@ -2,7 +2,8 @@
 
 \section*{Indleding}
 
-For at en bruger kan interagere med WinePrep, skal der være en brugergrænseflade. Brugergrænsefladen skal give brugeren mulighed, for at kunne benytte WinePreps funktioner. Der skal være mulighed for, at brugeren kan benytte sig af muligheden ”Åbn nu”, som åbner vinen straks efter at kommandoen er givet. Yderligere skal der være mulighed for, at brugeren kan planlægge åbningen af vinen, således at man kan bestemme et tidspunkt på åbning af vinen. På brugergrænsefladen skal det også være muligt at kunne tilgå "WineBook", "WhichWine", "Indstillinger" og "Aktuel info". Under Aktuel info skal der fremgå hvor lang tid der er tilbage til åbning af vinen. Der er yderligere blevet gjort nogle overvejelser over designet på brugergrænsefladen. Nogle af disse overejelser vil blive præsenteret her.
+For at en bruger kan interagere med WinePrep, skal der være en brugergrænseflade. Brugergrænsefladen skal give brugeren mulighed, for at kunne benytte WinePreps funktioner. Der skal være mulighed for, at brugeren kan benytte sig af muligheden ”Åbn nu”, som åbner vinen straks efter at kommandoen er givet. Yderligere skal der være mulighed for, at brugeren kan planlægge åbningen af vinen, således at man kan bestemme et tidspunkt på åbning af vinen. På brugergrænsefladen skal det også være muligt at kunne tilgå "WineBook", "WhichWine", "Indstillinger" og "Aktuel info". Under Aktuel info skal der fremgå hvor lang tid der er tilbage til åbning af vinen. Der er yderligere blevet gjort nogle overvejelser over designet på
+Menuen aktuel info laves nu med en tekst label der ændre med ændringen af tiden. Der ses ikke nogen grund til at aktuel info skal have en menu for sig da denne er væsentlig hele tiden. Derfor vil aktuel info nu vises i alle menuer. brugergrænsefladen. Nogle af disse overejelser vil blive præsenteret her. 
 
 \section*{Design og implementering}
 \subsection*{Skitsering af brugergrænseflade}
@@ -13,7 +14,7 @@ Da touch-mekanismen på Devkit8000 ikke er helt optimal, er det blevet besluttet
 \caption{Første skitse af brugergrænsefladen}
 
 \subsection*{Første udgave af brugergrænseflade}
-På første udgave af produktet blev det dog besluttet, at der ikke skal være nogen grafik på brugergrænsefladen. Yderligere blev det besluttet, at det kun er funktionen "Åbn nu" der skal implementeres, da det er denne funktion der danner grundlaget for funktionaliteten af produktet. Derfor blev Real Time Clocken  (RTC) heller ikke implementeret, og derfor kunne tiden heller ikke vises. Hverken et klokkeslættet eller på "Aktuel info".
+På første udgave af produktet blev det dog besluttet, at der ikke skal være nogen grafik på brugergrænsefladen. Yderligere blev det besluttet, at det kun er funktionen "Åbn nu" der skal implementeres, da det er denne funktion der danner grundlaget for funktionaliteten af produktet. Planlægningsmenuen er også blevet implementeret. Denne viser ikke hvilket tidspunkt vinen forventes klar, men hvor lang tid der vil gå før vinen er drikkeklar. Årsagen til dette er, at der ikke er noget batteri tilknyttet RTC på Devkit8000, hvilket vil betyde at RTC'en vil resette efter hvert reset af Devkit8000.
 Et foreløbigt design på brugergrænsefladen ser således ud:
 
 \includegraphics{Billeder/real_skitse}
@@ -24,7 +25,7 @@ Her kan det ses, at der ikke er blevet sat fokus på design og grafik. Når der 
 \includegraphics{Billeder/write}
 \caption{Eksempel på brug af fwrite funktionen}
 
-For at få svar på om hvorvidt en flaske er registreret eller ej, skal der læses via character device driveren. Dette gøres med funktionen fwrite(). Fwrite() ses brugt i følgende eksempel, hvor der skal læses om flasken er blevet registreret:
+For at få svar på om hvorvidt en flaske er registreret eller ej, skal der læses via character device driveren. Dette gøres med funktionen fread(). Fread() ses brugt i følgende eksempel, hvor der skal læses om flasken er blevet registreret:
 
 \includegraphics{Billeder/read}
 \caption{Eksempel på brug af fread funktionen}
@@ -35,7 +36,7 @@ Først nulstilles bufferen som skal indeholde kommandoen, og derefter læses der
 \caption{Eksempel på brug af switch-case efter at have læst fra PSoC}
 
 Denne kode vil resultere i at der kommer et vindue op, hvor der står ”Vinen åbnes. Vent venligst…”. Man vil få muligheden for at trykke "ok", for at få vinduet til at forsvinde igen. 
-Efter dette vil vinåbningen enten lykkedes eller fejle. Devkit8000 vil derefter få besked om åbningen er lykkedes eller om den er fejlet. Der vil endnu engang benyttes en switch-case til at bestemme hvilken besked, brugeren får frem på brugergrænsefladen.
+Efter dette vil vinåbningen enten lykkedes eller fejle. Devkit8000 vil derefter få besked om åbningen er lykkedes eller om den er fejlet. Der vil endnu engang benytte en switch-case til at bestemme hvilken besked, brugeren får frem på brugergrænsefladen.
 Selve klikfunktionen på de forskellige knapper er implementeret ved at højreklikke på de forskellige knapper og trykke på goto. Herefter vil der dukke en ny menu op. Her vælges clicked(). Her vil man få mulighed for at bestemme hvilken funktion knappen skal have, når den trykkes. Et eksempel ses her:
 
 \includegraphics{Billeder/pushButton}
@@ -50,7 +51,7 @@ Måden hvorpå menuskiftsfunktionen er blevet implementeret, er ved brug af show
 
 \section*{Test}
 
-Som tidligere beskrevet er der i første udgave kun implementeret "Åbn nu" funktionen. Derfor er det kun denne funktion der kan testes. Dog kan navigationen på de forskellige menuer på brugergrænsefladen også testes. Menuerne "WineBook", "WhichWine", "Indstillinger" og "Aktuel info" er ikke blevet implementeret i denne udgave, og derfor vil test af disse menuer ikke fremgå i denne test.
+Som tidligere beskrevet er der i første udgave kun implementeret "Åbn nu" og "Planlæg åbning" funktionerne. Derfor er det kun disse funktioner der kan testes. Dog kan navigationen på de forskellige menuer på brugergrænsefladen også testes. Menuerne "WineBook", "WhichWine", "Indstillinger" og "Aktuel info" er ikke blevet implementeret i denne udgave, og derfor vil test af disse menuer ikke fremgå i denne test.
 
 Read og write funktionerne testes ved at tilkoble en PSoC til Devkit8000, og forsøge at skrive og læse til og fra den. Der er blevet konstrueret nogle meget simple forsøg, hvor funktionerne fread og fwrite bruges. Forsøget er konstrueret således, at en led på PSoC'en lyser hver gang der læses fra den. Yderligere vil det der læses fra PSoC'en skrives til en fil på devkitted. Forsøget hvor der læses fra Devkit8000 er vedhæftet som en fil i bilaget, hvor man kan se at led'en på PSoC'en tænder og slukker hver gang der trykkes på "Åbn nu" på brugergrænsefladen. Koden der er brugt til at teste forbindelsen med er følgende:
 
@@ -70,8 +71,10 @@ For minutter ser det således ud:
 
 \section*{Resultater}
 
-Da hele produktet ikke er fuldt udviklet, er det ikke muligt at fremvise nogle resultater. Man kan se på videoen, at dioden tændes og slukkes ved hjælp af brugergrænsefladen på devkittet. Videoen kan ses i bilaget.
+Da hele produktet ikke er fuldt udviklet, er det ikke muligt at fremvise nogle resultater. Der er dog udviklet en testklasse hvorpå man kan teste læsning og skrivning. Denne klasse indeholder de samme metoder som den reelle klasse. Den eneste forskel er at testklassen læser og skriver til en fil der allerede er på computeren. På den måde kan man teste read og write metoderne.
+
+Man kan se på videoen, at dioden tændes og slukkes ved hjælp af brugergrænsefladen på devkittet. Videoen kan ses i bilaget.
 
 \section*{Konklusion}
 
-Alle test gik som forventet, da dioden på PSoC'en kom til at tænde ved læsning som forventet. Yderligere er designet for brugergrænsefladen, og navigationen i den blevet som forventet. Dog blev designet ikke implementeret, da dette vil gøres i en senere itteration.
+Alle test gik som forventet, da dioden på PSoC'en kom til at tænde ved læsning som forventet. Yderligere er designet for brugergrænsefladen, og navigationen i den blevet som forventet. Dog blev designet ikke implementeret, da dette vil gøres i en senere itteration. Testklassen fungerede som forventet da de ønskede vinduer poppede frem på de rigtige tidspunkter.
